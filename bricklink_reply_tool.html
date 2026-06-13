@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BrickLink Reply Tool</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: #f5f5f3;
+    color: #1a1a1a;
+    min-height: 100vh;
+    padding: 1.5rem 1rem 3rem;
+  }
+
+  .container { max-width: 560px; margin: 0 auto; }
+
+  h1 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 4px;
+    color: #1a1a1a;
+  }
+
+  .subtitle {
+    font-size: 13px;
+    color: #888;
+    margin-bottom: 1.5rem;
+  }
+
+  .section-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #aaa;
+    margin-bottom: 10px;
+  }
+
+  .template-btn {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    width: 100%;
+    background: #fff;
+    border: 1px solid #e8e8e6;
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    text-align: left;
+    transition: background 0.12s, border-color 0.12s;
+  }
+
+  .template-btn:hover { background: #f9f9f7; border-color: #d4d4d0; }
+  .template-btn:active { background: #f0f0ee; }
+
+  .btn-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  .icon-ship { background: #e8f4fd; }
+  .icon-quote { background: #edf7ed; }
+  .icon-cancel { background: #fdf0f0; }
+  .icon-photo { background: #fdf6e8; }
+
+  .btn-label { font-size: 15px; font-weight: 500; color: #1a1a1a; }
+  .btn-desc { font-size: 12px; color: #999; margin-top: 2px; }
+
+  .result-box {
+    background: #fff;
+    border: 1px solid #e8e8e6;
+    border-radius: 12px;
+    padding: 16px;
+    margin-top: 4px;
+    margin-bottom: 16px;
+    display: none;
+  }
+
+  .result-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #aaa;
+    margin-bottom: 10px;
+  }
+
+  .result-text {
+    font-size: 14px;
+    line-height: 1.75;
+    color: #333;
+    white-space: pre-wrap;
+    margin-bottom: 14px;
+  }
+
+  .copy-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #f5f5f3;
+    border: 1px solid #e0e0dc;
+    border-radius: 8px;
+    padding: 8px 14px;
+    font-size: 13px;
+    cursor: pointer;
+    color: #444;
+    transition: background 0.12s;
+  }
+
+  .copy-btn:hover { background: #ebebea; }
+  .copy-btn.copied { color: #2a7a2a; border-color: #b8dbb8; background: #f0f9f0; }
+
+  .divider {
+    border: none;
+    border-top: 1px solid #e8e8e6;
+    margin: 20px 0;
+  }
+
+  textarea {
+    width: 100%;
+    min-height: 90px;
+    font-size: 14px;
+    font-family: inherit;
+    resize: vertical;
+    border-radius: 10px;
+    border: 1px solid #e0e0dc;
+    padding: 12px 14px;
+    background: #fff;
+    color: #1a1a1a;
+    line-height: 1.6;
+    outline: none;
+    transition: border-color 0.12s;
+  }
+
+  textarea:focus { border-color: #aaa; }
+
+  .draft-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: #1a1a1a;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 11px 18px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: background 0.12s;
+  }
+
+  .draft-btn:hover { background: #333; }
+  .draft-btn:disabled { background: #ccc; cursor: not-allowed; }
+
+  .loading-text {
+    font-size: 13px;
+    color: #999;
+    margin-top: 10px;
+    display: none;
+  }
+
+  .api-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+    align-items: center;
+  }
+
+  .api-input {
+    flex: 1;
+    font-size: 13px;
+    font-family: monospace;
+    border-radius: 8px;
+    border: 1px solid #e0e0dc;
+    padding: 9px 12px;
+    background: #fff;
+    color: #1a1a1a;
+    outline: none;
+  }
+
+  .api-input:focus { border-color: #aaa; }
+
+  .api-save-btn {
+    background: #f5f5f3;
+    border: 1px solid #e0e0dc;
+    border-radius: 8px;
+    padding: 9px 14px;
+    font-size: 13px;
+    cursor: pointer;
+    color: #444;
+    white-space: nowrap;
+  }
+
+  .api-save-btn:hover { background: #ebebea; }
+  .api-save-btn.saved { color: #2a7a2a; border-color: #b8dbb8; background: #f0f9f0; }
+
+  .api-hint { font-size: 12px; color: #bbb; margin-bottom: 12px; }
+
+  .error-msg {
+    font-size: 13px;
+    color: #c0392b;
+    margin-top: 8px;
+    display: none;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <h1>BrickLink Reply Tool</h1>
+  <p class="subtitle">Quick templates &amp; AI drafter for customer queries</p>
+
+  <p class="section-label">Quick templates</p>
+
+  <button class="template-btn" onclick="showTemplate('shipping')">
+    <div class="btn-icon icon-ship">🚚</div>
+    <div>
+      <div class="btn-label">Shipping</div>
+      <div class="btn-desc">Shipping options &amp; cost enquiries</div>
+    </div>
+  </button>
+
+  <button class="template-btn" onclick="showTemplate('quote')">
+    <div class="btn-icon icon-quote">🧮</div>
+    <div>
+      <div class="btn-label">Quote</div>
+      <div class="btn-desc">Request for quote instructions</div>
+    </div>
+  </button>
+
+  <button class="template-btn" onclick="showTemplate('cancel')">
+    <div class="btn-icon icon-cancel">🚫</div>
+    <div>
+      <div class="btn-label">Cancellation</div>
+      <div class="btn-desc">Order cancellation policy</div>
+    </div>
+  </button>
+
+  <button class="template-btn" onclick="showTemplate('photos')">
+    <div class="btn-icon icon-photo">📷</div>
+    <div>
+      <div class="btn-label">Photos</div>
+      <div class="btn-desc">Photo requests for sets</div>
+    </div>
+  </button>
+
+  <div class="result-box" id="result-box">
+    <div class="result-label">Reply</div>
+    <div class="result-text" id="result-text"></div>
+    <button class="copy-btn" id="copy-btn" onclick="copyText()">
+      📋 Copy to clipboard
+    </button>
+  </div>
+
+  <hr class="divider">
+
+  <p class="section-label">Shipping agent email</p>
+
+  <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:12px;">
+    <div>
+      <label style="font-size:12px;color:#888;display:block;margin-bottom:5px;">Dimensions (e.g. 504029 → 50cm × 40cm × 29cm)</label>
+      <input type="text" id="sh-dims" placeholder="e.g. 504029" style="width:100%;font-size:14px;font-family:inherit;border-radius:8px;border:1px solid #e0e0dc;padding:9px 11px;background:#fff;color:#1a1a1a;outline:none;" oninput="updateShippingEmail()">
+    </div>
+    <div style="display:flex;gap:10px;">
+      <div style="flex:1">
+        <label style="font-size:12px;color:#888;display:block;margin-bottom:5px;">Weight (kg)</label>
+        <input type="number" id="sh-weight" placeholder="e.g. 6.55" min="0" step="0.01" style="width:100%;font-size:14px;font-family:inherit;border-radius:8px;border:1px solid #e0e0dc;padding:9px 11px;background:#fff;color:#1a1a1a;outline:none;-moz-appearance:textfield;" oninput="updateShippingEmail()">
+      </div>
+      <div style="flex:1">
+        <label style="font-size:12px;color:#888;display:block;margin-bottom:5px;">Declared value (SGD)</label>
+        <input type="number" id="sh-value" placeholder="e.g. 500" min="0" step="0.01" style="width:100%;font-size:14px;font-family:inherit;border-radius:8px;border:1px solid #e0e0dc;padding:9px 11px;background:#fff;color:#1a1a1a;outline:none;-moz-appearance:textfield;" oninput="updateShippingEmail()">
+      </div>
+    </div>
+    <div>
+      <label style="font-size:12px;color:#888;display:block;margin-bottom:5px;">Recipient name & address (paste as-is)</label>
+      <textarea id="sh-recipient" placeholder="Christine Rutigliano&#10;218 South Manning Blvd&#10;Albany, NY 12208&#10;UNITED STATES" rows="4" style="width:100%;font-size:14px;font-family:inherit;border-radius:8px;border:1px solid #e0e0dc;padding:9px 11px;background:#fff;color:#1a1a1a;outline:none;resize:vertical;" oninput="updateShippingEmail()"></textarea>
+    </div>
+    <div style="display:flex;gap:10px;">
+      <div style="flex:1">
+        <label style="font-size:12px;color:#888;display:block;margin-bottom:5px;">Recipient phone</label>
+        <input type="text" id="sh-phone" placeholder="e.g. +1(518)852-0442" style="width:100%;font-size:14px;font-family:inherit;border-radius:8px;border:1px solid #e0e0dc;padding:9px 11px;background:#fff;color:#1a1a1a;outline:none;" oninput="updateShippingEmail()">
+      </div>
+      <div style="flex:1">
+        <label style="font-size:12px;color:#888;display:block;margin-bottom:5px;">Recipient email</label>
+        <input type="text" id="sh-email" placeholder="e.g. user@email.com" style="width:100%;font-size:14px;font-family:inherit;border-radius:8px;border:1px solid #e0e0dc;padding:9px 11px;background:#fff;color:#1a1a1a;outline:none;" oninput="updateShippingEmail()">
+      </div>
+    </div>
+    <div>
+      <label style="font-size:12px;color:#888;display:block;margin-bottom:5px;">Shipping cost (SGD)</label>
+      <input type="number" id="sh-shipping" placeholder="e.g. 200" min="0" step="0.01" style="width:100%;font-size:14px;font-family:inherit;border-radius:8px;border:1px solid #e0e0dc;padding:9px 11px;background:#fff;color:#1a1a1a;outline:none;-moz-appearance:textfield;" oninput="updateShippingEmail()">
+    </div>
+  </div>
+
+  <div id="sh-result-box" style="background:#f9f9f7;border:1px solid #e8e8e6;border-radius:12px;padding:16px;margin-bottom:12px;display:none;">
+    <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:#aaa;margin-bottom:10px;">Email draft</div>
+    <pre id="sh-result-text" style="font-size:13px;color:#333;line-height:1.7;white-space:pre-wrap;font-family:inherit;margin:0 0 12px;"></pre>
+    <button class="copy-btn" id="sh-copy-btn" onclick="copyShippingEmail()">📋 Copy to clipboard</button>
+  </div>
+
+  <hr class="divider">
+
+  <p class="section-label">AI drafter — complex queries</p>
+
+  <div class="api-hint">Enter your Anthropic API key to enable AI drafting. It is saved in your browser only.</div>
+  <div class="api-row">
+    <input type="password" class="api-input" id="api-key-input" placeholder="sk-ant-..." />
+    <button class="api-save-btn" id="api-save-btn" onclick="saveApiKey()">Save key</button>
+  </div>
+
+  <textarea id="customer-msg" placeholder="Paste the customer's message here..."></textarea>
+  <br>
+  <button class="draft-btn" id="draft-btn" onclick="draftReply()">✦ Draft a reply</button>
+  <div class="loading-text" id="loading-text">Drafting reply...</div>
+  <div class="error-msg" id="error-msg"></div>
+
+  <div class="result-box" id="ai-result-box">
+    <div class="result-label">AI draft</div>
+    <div class="result-text" id="ai-result-text"></div>
+    <button class="copy-btn" id="ai-copy-btn" onclick="copyAiText()">
+      📋 Copy to clipboard
+    </button>
+  </div>
+
+</div>
+
+<script>
+const templates = {
+  shipping: `Hi! Thanks for reaching out. You can just add the item to cart to check for the shipping options and estimates available. The charges will depend on the shipping and payment option. Do note that the estimate doesn't include packing materials so it might vary a little.`,
+
+  quote: `Hi! Please use the "Request for Quote" function by selecting "Request for quote" as the shipping option and then click on the "Request for Quote" button at the last page of checkout, and comment which shipping option you want a quotation for. Do not click "Place Order" as that means you are obligated to complete the transaction.
+
+Bricklink sometimes adds taxes to the order so this would be the most accurate way of getting a quotation and prevent any misunderstandings in the final amount. I can also capture your preferred payment method and apply the correct fees if any.
+
+Thank you for your understanding.`,
+
+  cancel: `Hi,
+
+Thank you for reaching out. Unfortunately, we are unable to accommodate cancellation requests.
+
+Our store policy — which is stated clearly on our store page — does not allow cancellations. This is because BrickLink charges a processing fee upon order placement, which is only reimbursed the following month in the event of a cancellation. We apply this policy consistently and fairly to all customers.
+
+If you'd like to proceed, we'd be happy to fulfil your order promptly. Otherwise, you may allow the Non-Paying Buyer process to run its course.
+
+Thank you for your understanding.`,
+
+  photos: `The set is currently in my storage facility and not accessible for pictures. Perhaps you can let me know what are your concerns that you need a photograph first?
+
+Sets are all in good/decent condition unless otherwise stated in the description. We however do not guarantee their condition when it reaches you as they are handled by third party courier.
+
+You may proceed to place an order first and I'll send you the pictures for verification. If the box is significantly not as described, I'll allow for cancellation of the order.
+
+I apologise for this but we have too many picture requests (almost 10-20 at times) from people who aren't serious about purchasing. Thank you for your understanding.`
+};
+
+const storeContext = `You are a helpful assistant for a BrickLink LEGO store. When drafting replies to customer queries, you must follow these store policies strictly:
+
+SHIPPING: Customers can add items to cart to check shipping options and estimates. Charges depend on shipping and payment option. Estimates don't include packing materials so may vary slightly.
+
+QUOTE: Customers should use the "Request for Quote" function — select "Request for quote" as shipping option, then click "Request for Quote" at last page of checkout. They must NOT click "Place Order". BrickLink sometimes adds taxes, so this is the most accurate way to get a quotation. The seller can capture preferred payment method and apply correct fees.
+
+CANCELLATION: Order cancellations are NOT allowed. BrickLink charges a processing fee on order placement, reimbursed only the following month if cancelled. Policy is applied consistently and fairly. Customers can allow the Non-Paying Buyer (NPB) process to run its course if they don't wish to proceed.
+
+PHOTOS: Sets are in storage and not accessible for photos on demand. Sets are in good/decent condition unless otherwise stated. Condition cannot be guaranteed during third-party courier handling. Customer can place an order first and photos will be sent for verification. Cancellation is allowed only if box is significantly not as described.
+
+Draft a polite, professional, and firm reply. Keep it concise. Do not make up policies not listed above.`;
+
+window.addEventListener('load', () => {
+  const saved = localStorage.getItem('bl_api_key');
+  if (saved) {
+    document.getElementById('api-key-input').value = saved;
+    const btn = document.getElementById('api-save-btn');
+    btn.textContent = 'Saved ✓';
+    btn.classList.add('saved');
+  }
+});
+
+function saveApiKey() {
+  const val = document.getElementById('api-key-input').value.trim();
+  if (!val) return;
+  localStorage.setItem('bl_api_key', val);
+  const btn = document.getElementById('api-save-btn');
+  btn.textContent = 'Saved ✓';
+  btn.classList.add('saved');
+  setTimeout(() => {
+    btn.textContent = 'Save key';
+    btn.classList.remove('saved');
+  }, 2000);
+}
+
+function showTemplate(key) {
+  const box = document.getElementById('result-box');
+  const text = document.getElementById('result-text');
+  text.textContent = templates[key];
+  box.style.display = 'block';
+  const btn = document.getElementById('copy-btn');
+  btn.classList.remove('copied');
+  btn.textContent = '📋 Copy to clipboard';
+  box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function copyText() {
+  const text = document.getElementById('result-text').textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById('copy-btn');
+    btn.classList.add('copied');
+    btn.textContent = '✓ Copied!';
+    setTimeout(() => {
+      btn.classList.remove('copied');
+      btn.textContent = '📋 Copy to clipboard';
+    }, 2000);
+  });
+}
+
+function copyAiText() {
+  const text = document.getElementById('ai-result-text').textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById('ai-copy-btn');
+    btn.classList.add('copied');
+    btn.textContent = '✓ Copied!';
+    setTimeout(() => {
+      btn.classList.remove('copied');
+      btn.textContent = '📋 Copy to clipboard';
+    }, 2000);
+  });
+}
+
+async function draftReply() {
+  const msg = document.getElementById('customer-msg').value.trim();
+  const apiKey = localStorage.getItem('bl_api_key') || document.getElementById('api-key-input').value.trim();
+  const errorEl = document.getElementById('error-msg');
+  errorEl.style.display = 'none';
+
+  if (!msg) {
+    errorEl.textContent = 'Please paste a customer message first.';
+    errorEl.style.display = 'block';
+    return;
+  }
+  if (!apiKey) {
+    errorEl.textContent = 'Please enter and save your Anthropic API key above.';
+    errorEl.style.display = 'block';
+    return;
+  }
+
+  const btn = document.getElementById('draft-btn');
+  const loading = document.getElementById('loading-text');
+  btn.disabled = true;
+  loading.style.display = 'block';
+
+  try {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 1000,
+        system: storeContext,
+        messages: [{ role: 'user', content: msg }]
+      })
+    });
+
+    const data = await response.json();
+
+    if (data.error) {
+      errorEl.textContent = 'API error: ' + data.error.message;
+      errorEl.style.display = 'block';
+      return;
+    }
+
+    const draft = data.content?.find(b => b.type === 'text')?.text || 'Could not generate a reply. Please try again.';
+    const box = document.getElementById('ai-result-box');
+    const text = document.getElementById('ai-result-text');
+    text.textContent = draft;
+    box.style.display = 'block';
+    const copyBtn = document.getElementById('ai-copy-btn');
+    copyBtn.classList.remove('copied');
+    copyBtn.textContent = '📋 Copy to clipboard';
+    box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  } catch(e) {
+    errorEl.textContent = 'Network error. Please check your internet connection and try again.';
+    errorEl.style.display = 'block';
+  } finally {
+    btn.disabled = false;
+    loading.style.display = 'none';
+  }
+}
+
+function parseDims(raw) {
+  var d = raw.trim();
+  var m = d.match(/(\d+)\s*[xX\u00d7]\s*(\d+)\s*[xX\u00d7]\s*(\d+)/);
+  if (m) return m[1] + 'cm x ' + m[2] + 'cm x ' + m[3] + 'cm';
+  var digits = d.replace(/[^0-9]/g, '');
+  if (digits.length === 6) return digits.slice(0,2) + 'cm x ' + digits.slice(2,4) + 'cm x ' + digits.slice(4,6) + 'cm';
+  if (digits.length === 7) return digits.slice(0,3) + 'cm x ' + digits.slice(3,5) + 'cm x ' + digits.slice(5,7) + 'cm';
+  return d;
+}
+
+function fmtSGD(val) {
+  var n = parseFloat(val);
+  if (isNaN(n)) return '';
+  return 'S$' + n.toFixed(2);
+}
+
+function updateShippingEmail() {
+  var dimsRaw = document.getElementById('sh-dims').value.trim();
+  var weight  = document.getElementById('sh-weight').value.trim();
+  var value   = parseFloat(document.getElementById('sh-value').value) || 0;
+  var recip   = document.getElementById('sh-recipient').value.trim();
+  var phone   = document.getElementById('sh-phone').value.trim();
+  var emailAddr = document.getElementById('sh-email').value.trim();
+  var ship    = parseFloat(document.getElementById('sh-shipping').value) || 0;
+
+  if (!dimsRaw && !weight && !value && !recip) {
+    document.getElementById('sh-result-box').style.display = 'none';
+    return;
+  }
+
+  var dims        = dimsRaw ? parseDims(dimsRaw) : '___';
+  var weightStr   = weight ? weight + 'kg' : '___';
+  var valueStr    = value ? fmtSGD(value) : '___';
+  var insurance   = value ? Math.ceil(value * 0.02 * 100) / 100 : 0;
+  var insuranceStr = value ? fmtSGD(insurance) : '___';
+  var total       = ship + insurance;
+  var totalStr    = (ship || insurance) ? fmtSGD(total) : '___';
+  var shipStr     = ship ? fmtSGD(ship) : '___';
+
+  var recipBlock = recip || '___';
+  if (phone) recipBlock += '\n' + phone;
+  if (emailAddr) recipBlock += '\n' + emailAddr;
+
+  var lines = [
+    'Hi Edwin,',
+    '',
+    'Please help to process the following shipment.',
+    '',
+    'Dimensions: ' + dims,
+    'Weight: ' + weightStr,
+    'Value: ' + valueStr,
+    '',
+    'Pick Up From:',
+    'Ho Qi Feng',
+    'Blk 118A Alkaff Crescent',
+    '#12-79',
+    'SINGAPORE 341118',
+    '+6588858252',
+    '',
+    'To:',
+    recipBlock,
+    '',
+    'IMPORTANT! for Declaration',
+    'Country/Territory of Manufacture: Singapore',
+    'Amount due:',
+    'Shipping = ' + shipStr,
+    'Insurance = ' + insuranceStr,
+    'Total = ' + totalStr,
+    '',
+    'Thanks!'
+  ];
+
+  document.getElementById('sh-result-text').textContent = lines.join('\n');
+  document.getElementById('sh-result-box').style.display = 'block';
+}
+
+function copyShippingEmail() {
+  var text = document.getElementById('sh-result-text').textContent;
+  navigator.clipboard.writeText(text).then(function() {
+    var btn = document.getElementById('sh-copy-btn');
+    btn.classList.add('copied');
+    btn.textContent = '\u2713 Copied!';
+    setTimeout(function() {
+      btn.classList.remove('copied');
+      btn.textContent = '\ud83d\udccb Copy to clipboard';
+    }, 2000);
+  });
+}
+
+</script>
+</body>
+</html>
