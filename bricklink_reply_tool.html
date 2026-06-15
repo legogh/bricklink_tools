@@ -284,16 +284,16 @@
     </div>
     <div>
       <label style="font-size:12px;color:#888;display:block;margin-bottom:5px;">Recipient name & address (paste as-is)</label>
-      <textarea id="sh-recipient" placeholder="Christine Rutigliano&#10;218 South Manning Blvd&#10;Albany, NY 12208&#10;UNITED STATES" rows="4" style="width:100%;font-size:14px;font-family:inherit;border-radius:8px;border:1px solid #e0e0dc;padding:9px 11px;background:#fff;color:#1a1a1a;outline:none;resize:vertical;" oninput="updateShippingEmail()"></textarea>
+      <textarea id="sh-recipient" placeholder="Name&#10;Street&#10;City, State, ZIP&#10;Country" rows="4" style="width:100%;font-size:14px;font-family:inherit;border-radius:8px;border:1px solid #e0e0dc;padding:9px 11px;background:#fff;color:#1a1a1a;outline:none;resize:vertical;" oninput="updateShippingEmail()"></textarea>
     </div>
     <div style="display:flex;gap:10px;">
       <div style="flex:1">
         <label style="font-size:12px;color:#888;display:block;margin-bottom:5px;">Recipient phone</label>
-        <input type="text" id="sh-phone" placeholder="e.g. +1(518)852-0442" style="width:100%;font-size:14px;font-family:inherit;border-radius:8px;border:1px solid #e0e0dc;padding:9px 11px;background:#fff;color:#1a1a1a;outline:none;" oninput="updateShippingEmail()">
+        <input type="text" id="sh-phone" placeholder="+1(XXX)XXX-XXXX" style="width:100%;font-size:14px;font-family:inherit;border-radius:8px;border:1px solid #e0e0dc;padding:9px 11px;background:#fff;color:#1a1a1a;outline:none;" oninput="updateShippingEmail()">
       </div>
       <div style="flex:1">
         <label style="font-size:12px;color:#888;display:block;margin-bottom:5px;">Recipient email</label>
-        <input type="text" id="sh-email" placeholder="e.g. user@email.com" style="width:100%;font-size:14px;font-family:inherit;border-radius:8px;border:1px solid #e0e0dc;padding:9px 11px;background:#fff;color:#1a1a1a;outline:none;" oninput="updateShippingEmail()">
+        <input type="text" id="sh-email" placeholder="email@example.com" style="width:100%;font-size:14px;font-family:inherit;border-radius:8px;border:1px solid #e0e0dc;padding:9px 11px;background:#fff;color:#1a1a1a;outline:none;" oninput="updateShippingEmail()">
       </div>
     </div>
     <div>
@@ -553,11 +553,11 @@ function updateShippingEmail() {
     'Value: ' + valueStr,
     '',
     'Pick Up From:',
-    'Ho Qi Feng',
-    'Blk 118A Alkaff Crescent',
-    '#12-79',
-    'SINGAPORE 341118',
-    '+6588858252',
+    '[Your Name]',
+    '[Your Address Line 1]',
+    '[Your Address Line 2]',
+    'SINGAPORE [Postal Code]',
+    '[Your Phone Number]',
     '',
     'To:',
     recipBlock,
